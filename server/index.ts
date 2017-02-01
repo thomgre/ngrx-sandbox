@@ -21,7 +21,8 @@ class App {
   migrate(): void {
 
     this._migrate = new Migration(this._dynamo, path.dirname(__filename) + '/migrations');
-    this._migrate.migrate();
+    // this._migrate.migrate();
+    this._migrate.list();
   }
 }
 

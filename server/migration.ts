@@ -7,7 +7,7 @@ let attr = require('dynamodb-data-types').AttributeValue;
 let fs = require('fs');
 
 export class Migration {
-  _db : DynamoDB;
+  _db: DynamoDB;
   _migrationPath: string;
   _dynamoMigrationTableName: string;
 
@@ -20,7 +20,25 @@ export class Migration {
   constructor(db: DynamoDB, path: string, migrationTableName: string = null) {
     this._db = db;
     this._migrationPath = path;
-    this._dynamoMigrationTableName = migrationTableName || "MY_DYNAMO_MIGRATION_TABLE" ;
+    this._dynamoMigrationTableName = migrationTableName || "MY_DYNAMO_MIGRATION_TABLE";
+  }
+
+  /**
+   * Dumps the content of the migration table
+   */
+  list(): void {
+    let params = {
+      TableName: this._dynamoMigrationTableName
+    };
+
+    this._db.scan(params, (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+
+      console.log(data);
+    });
   }
 
   /**
@@ -36,7 +54,7 @@ export class Migration {
         console.error("Unable to get content from dynamo-migrations folder. Reason: ", err);
       }
 
-      this.checkAndCreateMigrationTable( (err) => {
+      this.checkAndCreateMigrationTable((err) => {
         if (err) {
           throw err;
         }
@@ -62,30 +80,30 @@ export class Migration {
    */
   private checkIfMigrationAlreadyRan(filename, callback, skipCallback) {
 
-      var params = {
-        TableName: this._dynamoMigrationTableName,
-        IndexName: 'name_index',
-        KeyConditions: {
-          'name': {
-            AttributeValueList: [{'S': filename}],
-            ComparisonOperator: 'EQ'
-          }
+    var params = {
+      TableName: this._dynamoMigrationTableName,
+      IndexName: 'name_index',
+      KeyConditions: {
+        'name': {
+          AttributeValueList: [{'S': filename}],
+          ComparisonOperator: 'EQ'
         }
-      };
+      }
+    };
 
-      this._db.query(params, function (err, data) {
-        if (err) {
-          callback(err);
-        }
+    this._db.query(params, function (err, data) {
+      if (err) {
+        callback(err);
+      }
 
-        if (data.Items.length > 0) {
-          skipCallback();
-        } else {
-          if (typeof callback === 'function') {
-            callback(null, null);
-          }
+      if (data.Items.length > 0) {
+        skipCallback();
+      } else {
+        if (typeof callback === 'function') {
+          callback(null, null);
         }
-      });
+      }
+    });
   }
 
   /**
@@ -95,9 +113,9 @@ export class Migration {
    * @param files {array:string} the list of migration files
    * @param callback {function} callback called at the end of the process
    */
-  private executeMigrations(files:string[],callback): void {
+  private executeMigrations(files: string[], callback): void {
     var filename = files[0];
-    var fileLocation = this._migrationPath +'/'+ filename;
+    var fileLocation = this._migrationPath + '/' + filename;
     var migration = require(fileLocation);
 
     console.log('MIG', fileLocation);
@@ -105,7 +123,7 @@ export class Migration {
     if (typeof migration.migrate === 'function') {
       console.log("call back found");
 
-      var executeNext =  (files, callback2) => {
+      var executeNext = (files, callback2) => {
 
         if (files.length == 1) {
           if (typeof callback === 'function') {
@@ -117,18 +135,18 @@ export class Migration {
         }
       }
 
-      this.checkIfMigrationAlreadyRan(filename,  (err) => {
+      this.checkIfMigrationAlreadyRan(filename, (err) => {
         if (err) {
           throw err;
         }
 
         console.log('running migration: ', fileLocation);
-        migration.migrate( (err) => {
+        migration.migrate((err) => {
           if (err) {
             throw err;
           }
 
-          this.saveMigrationInformation(filename,  (err) => {
+          this.saveMigrationInformation(filename, (err) => {
             console.log('is this');
             executeNext(files, callback);
           });
@@ -153,8 +171,8 @@ export class Migration {
    * @param filename {string}  is the file that has run
    * @param callback {function} the callback called at the end of the process
    */
-  saveMigrationInformation(filename, callback) : void {
-    this._db.describeTable({TableName: this._dynamoMigrationTableName},  (err, data) => {
+  saveMigrationInformation(filename, callback): void {
+    this._db.describeTable({TableName: this._dynamoMigrationTableName}, (err, data) => {
 
       this._db.putItem({
         Item: attr.wrap({
@@ -164,7 +182,7 @@ export class Migration {
           createdat: new Date().toISOString()
         }),
         TableName: this._dynamoMigrationTableName
-      },  (err, data) => {
+      }, (err, data) => {
         callback(err);
       });
     });
@@ -176,8 +194,8 @@ export class Migration {
    * check if migration file has already run
    * @param callback
    */
-  checkAndCreateMigrationTable (callback) : void {
-    this._db.describeTable({TableName: this._dynamoMigrationTableName},  (err, data) => {
+  checkAndCreateMigrationTable(callback): void {
+    this._db.describeTable({TableName: this._dynamoMigrationTableName}, (err, data) => {
 
       if (err != null && err.code == 'ResourceNotFoundException') {
         var migTable = {
@@ -202,7 +220,7 @@ export class Migration {
 
         console.log('creating migration table.')
 
-        this._db.createTable(migTable,  (error, data) => {
+        this._db.createTable(migTable, (error, data) => {
           if (error) {
             console.log("Migration table creation error: ", error);
             throw new Error("failed to create migrations table");
