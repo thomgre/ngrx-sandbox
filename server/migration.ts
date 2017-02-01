@@ -1,23 +1,26 @@
 import Any = jasmine.Any;
-import * as Promise from 'bluebird';
-
 import * as DynamoDB from "aws-sdk/clients/dynamodb";
-/**
- * Created by hpfs on 01/02/2017.
- */
-var AWS = require('aws-sdk');
-var attr = require('dynamodb-data-types').AttributeValue;
-var fs = require('fs');
 
-class Migration {
+
+let AWS = require('aws-sdk');
+let attr = require('dynamodb-data-types').AttributeValue;
+let fs = require('fs');
+
+export class Migration {
   _db : DynamoDB;
   _migrationPath: string;
   _dynamoMigrationTableName: string;
 
-  constructor(db: DynamoDB, path: string, migrationPath: string = null) {
+  /**
+   *
+   * @param db {DynamoDB} - connection to the dynamodb
+   * @param path {string} - path to the migration folder containing migration files
+   * @param migrationTableName {string} - optional name of migration table configf
+   */
+  constructor(db: DynamoDB, path: string, migrationTableName: string = null) {
     this._db = db;
     this._migrationPath = path;
-    this._dynamoMigrationTableName = migrationPath || "MY_DYNAMO_MIGRATION_TABLE" ;
+    this._dynamoMigrationTableName = migrationTableName || "MY_DYNAMO_MIGRATION_TABLE" ;
   }
 
   /**
@@ -27,19 +30,18 @@ class Migration {
    *
    */
   migrate(): void {
-    var migrationLocation = process.env.PWD + "/dynamo-migrations";
-    fs.readdir(migrationLocation, function (err, files) {
+
+    fs.readdir(this._migrationPath, (err, files) => {
       if (err) {
         console.error("Unable to get content from dynamo-migrations folder. Reason: ", err);
       }
 
-      var dynamodb = new AWS.DynamoDB({endpoint: new AWS.Endpoint(process.env.AWS_DYNAMODB_ENDPOINT)});
-      this.checkAndCreateMigrationTable(dynamodb, function (err) {
+      this.checkAndCreateMigrationTable( (err) => {
         if (err) {
           throw err;
         }
 
-        this.executeMigrations(dynamodb, files, function(err, data) {
+        this.executeMigrations(files, (err, data) => {
           if (err) {
             console.log("ERROR: ", err);
             return;
@@ -59,6 +61,7 @@ class Migration {
    * @param skipCallback
    */
   private checkIfMigrationAlreadyRan(filename, callback, skipCallback) {
+
       var params = {
         TableName: this._dynamoMigrationTableName,
         IndexName: 'name_index',
@@ -78,7 +81,9 @@ class Migration {
         if (data.Items.length > 0) {
           skipCallback();
         } else {
-          callback(null, null);
+          if (typeof callback === 'function') {
+            callback(null, null);
+          }
         }
       });
   }
@@ -92,10 +97,15 @@ class Migration {
    */
   private executeMigrations(files:string[],callback): void {
     var filename = files[0];
-    var fileLocation = process.env.PWD + "/migrations/" + filename;
+    var fileLocation = this._migrationPath +'/'+ filename;
     var migration = require(fileLocation);
+
+    console.log('MIG', files[0]);
+
     if (typeof migration.migrate === 'function') {
-      var executeNext = function (files, callback) {
+      console.log("call back found");
+
+      var executeNext =  (files, callback2) => {
 
         if (files.length == 1) {
           if (typeof callback === 'function') {
@@ -107,18 +117,18 @@ class Migration {
         }
       }
 
-      this.checkIfMigrationAlreadyRan(filename, function (err) {
+      this.checkIfMigrationAlreadyRan(filename,  (err) => {
         if (err) {
           throw err;
         }
 
         console.log('running migration: ', fileLocation);
-        migration.migrate(this._db, function (err) {
+        migration.migrate( (err) => {
           if (err) {
             throw err;
           }
 
-          this.saveMigrationInformation( filename, function (err) {
+          this.saveMigrationInformation(filename,  (err) => {
             executeNext(files, callback);
           });
         });
@@ -143,7 +153,8 @@ class Migration {
    * @param callback {function} the callback called at the end of the process
    */
   saveMigrationInformation(filename, callback) : void {
-    this._db.describeTable({TableName: this._dynamoMigrationTableName}, function (err, data) {
+    this._db.describeTable({TableName: this._dynamoMigrationTableName},  (err, data) => {
+
       this._db.putItem({
         Item: attr.wrap({
           id: data.Table.ItemCount + 1,
@@ -152,7 +163,7 @@ class Migration {
           createdat: new Date().toISOString()
         }),
         TableName: this._dynamoMigrationTableName
-      }, function (err, data) {
+      },  (err, data) => {
         callback(err);
       });
     });
@@ -165,7 +176,8 @@ class Migration {
    * @param callback
    */
   checkAndCreateMigrationTable (callback) : void {
-    this._db.describeTable({TableName: this._dynamoMigrationTableName}, function (err, data) {
+    this._db.describeTable({TableName: this._dynamoMigrationTableName},  (err, data) => {
+
       if (err != null && err.code == 'ResourceNotFoundException') {
         var migTable = {
           AttributeDefinitions: [
@@ -189,15 +201,19 @@ class Migration {
 
         console.log('creating migration table.')
 
-        this._db.createTable(migTable, function (error, data) {
+        this._db.createTable(migTable,  (error, data) => {
           if (error) {
             console.log("Migration table creation error: ", error);
             throw new Error("failed to create migrations table");
           }
           callback();
         });
+
       } else {
-        callback();
+        console.log(err);
+        if (typeof callback === 'function') {
+          callback(err);
+        }
       }
     });
   }

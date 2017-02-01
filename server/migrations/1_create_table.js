@@ -10,6 +10,6 @@
  * @param callback {function} the callback
  */
 
-exports.migrate = function(dynamodb, callback) {
-  callback();
+exports.migrate = function (dynamodb, callback) {
+  callback(null, "first migration gone righst");
 }
