@@ -1,6 +1,6 @@
 /*jslint node:true */
 
-'use strict';
+"use strict";
 
 /**
  * migrations are written using a simple module that accepts
@@ -11,7 +11,5 @@
  */
 
 exports.migrate = function (dynamodb, callback) {
-
-     callback(null, "first migration gone righst");
-  
-}
+    callback(null, "first migration gone righst");
+};

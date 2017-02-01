@@ -140,7 +140,7 @@ export class Migration {
         }
 
         console.log('running migration: ', fileLocation);
-        migration.migrate((err) => {
+        migration.migrate(this._db, (err) => {
           if (err) {
             throw err;
           }
