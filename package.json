@@ -8,6 +8,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
+    "dynamo:local": "docker run -p 8000:8000 forty8bit/dynamodb-local -sharedDb",
     "build:aot:prod": "npm run clean:dist && npm run clean:aot && webpack --config config/webpack.prod.js  --progress --profile --bail",
     "build:aot": "npm run build:aot:prod",
     "build:dev": "npm run clean:dist && webpack --config config/webpack.dev.js --progress --profile",
