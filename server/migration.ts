@@ -100,7 +100,7 @@ export class Migration {
     var fileLocation = this._migrationPath +'/'+ filename;
     var migration = require(fileLocation);
 
-    console.log('MIG', files[0]);
+    console.log('MIG', fileLocation);
 
     if (typeof migration.migrate === 'function') {
       console.log("call back found");
