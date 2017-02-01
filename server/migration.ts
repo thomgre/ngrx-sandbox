@@ -61,8 +61,7 @@ export class Migration {
 
         this.executeMigrations(files, (err, data) => {
           if (err) {
-            console.log("ERROR: ", err);
-            return;
+            throw err;
           }
 
           console.log("SUCCESS");
