@@ -13,6 +13,7 @@
     "strictNullChecks": false,
     "lib": [
       "dom",
+      "es6.promise",
       "es6"
     ],
     "typeRoots": [
