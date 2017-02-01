@@ -129,6 +129,7 @@ export class Migration {
           }
 
           this.saveMigrationInformation(filename,  (err) => {
+            console.log('is this');
             executeNext(files, callback);
           });
         });

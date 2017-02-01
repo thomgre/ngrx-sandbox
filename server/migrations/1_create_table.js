@@ -11,5 +11,8 @@
  */
 
 exports.migrate = function (dynamodb, callback) {
-  callback(null, "first migration gone righst");
+
+  if (typeof callback === 'function') {
+     callback(null, "first migration gone righst");
+  }
 }
