@@ -12,13 +12,12 @@ var fs = require('fs');
 class Migration {
   _db : DynamoDB;
   _migrationPath: string;
-
   _dynamoMigrationTableName: string;
 
-  constructor(db: DynamoDB, path: string) {
+  constructor(db: DynamoDB, path: string, migrationPath: string = null) {
     this._db = db;
     this._migrationPath = path;
-    this._dynamoMigrationTableName = "MY_DYNAMO_MIGRATION_TABLE";
+    this._dynamoMigrationTableName = migrationPath || "MY_DYNAMO_MIGRATION_TABLE" ;
   }
 
   /**
