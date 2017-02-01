@@ -2,8 +2,7 @@
   "name": "ngrx-sandbox",
   "version": "",
   "description": "",
-  "keywords": [
-  ],
+  "keywords": [],
   "homepage": "",
   "author": "",
   "license": "MIT",
@@ -80,7 +79,9 @@
     "@angularclass/hmr-loader": "~3.0.2",
     "@ngrx/core": "^1.2.0",
     "@ngrx/store": "^2.2.1",
+    "aws-sdk": "^2.9.0",
     "core-js": "^2.4.1",
+    "dynamodb-migrations": "0.0.10",
     "http-server": "^0.9.0",
     "ie-shim": "^0.1.0",
     "jasmine-core": "^2.5.2",
@@ -150,8 +151,7 @@
     "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
     "webpack-merge": "~2.6.1"
   },
-  "repository": {
-  },
+  "repository": {},
   "engines": {
     "node": ">= 4.2.1",
     "npm": ">= 3"
