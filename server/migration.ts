@@ -1,4 +1,4 @@
-import Any = jasmine.Any;
+//import Any = jasmine.Any; do 'typings install' in root dir instead
 import * as DynamoDB from "aws-sdk/clients/dynamodb";
 
 

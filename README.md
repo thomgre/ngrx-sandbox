@@ -5,7 +5,7 @@ Docker
 We will use dockerize development to setup a testing environment.
 
 On linux
-
+1
 ```bash
 $ sudo apt-get -y install docker-engine
 ```
@@ -24,7 +24,7 @@ To pull and install the container
 $ docker pull forty8bit/dynamodb-local
 ```
 
-To run the container
+To run the container (might require sudo)
 ```bash
 $ docker run -p 8000:8000 forty8bit/dynamodb-local -sharedDb
 ```
