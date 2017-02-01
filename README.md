@@ -31,7 +31,7 @@ $ docker run -p 8000:8000 forty8bit/dynamodb-local -sharedDb
 
 A runner has been specified in the package.json so i can run the 
 ```bash
-$ npm run dynamodb
+$ npm run dynamo:local
 ```
 
 to stop running you have to break execution in the shell you run the 
