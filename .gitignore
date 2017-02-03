@@ -63,7 +63,6 @@ dll/
 # IDE #
 .idea/
 *.swp
-.vscode
 
 # Angular #
 *.ngfactory.ts
