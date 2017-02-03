@@ -8,6 +8,7 @@ we cannot run a real ios emulator
 
 2. Docker containers are fine?
 
+3. moving to confluence?
 
 Current application
 

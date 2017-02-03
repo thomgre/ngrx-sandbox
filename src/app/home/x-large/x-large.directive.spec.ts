@@ -1,4 +1,4 @@
-import {
+1import {
   fakeAsync,
   inject,
   tick,

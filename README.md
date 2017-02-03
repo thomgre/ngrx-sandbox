@@ -1,7 +1,13 @@
 
-
-Docker
+Application
 --
+
+
+[BACKEND](BACKEND.md)
+
+
+*** Docker
+
 We will use dockerize development to setup a testing environment.
 
 On linux
@@ -12,7 +18,7 @@ $ sudo apt-get -y install docker-engine
 refer to [Guide](https://docs.docker.com/engine/installation/linux/ubuntu/)
 
 
-**DynamoDB Local**
+** DynamoDB Local **
 
 I'll setup a locla docker container to handle a local docker setup 
 with replica of the database from json.
