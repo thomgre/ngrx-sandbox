@@ -14,6 +14,7 @@ const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
 const NamedModulesPlugin = require('webpack/lib/NamedModulesPlugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 /**
  * Webpack Constants
@@ -46,7 +47,8 @@ module.exports = function (options) {
      * See: http://webpack.github.io/docs/configuration.html#devtool
      * See: https://github.com/webpack/docs/wiki/build-performance#sourcemaps
      */
-    devtool: 'cheap-module-source-map',
+    //devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
 
     /**
      * Options affecting the output of the compilation.
@@ -76,7 +78,7 @@ module.exports = function (options) {
        *
        * See: http://webpack.github.io/docs/configuration.html#output-sourcemapfilename
        */
-      sourceMapFilename: '[file].map',
+     // sourceMapFilename: '[file].map',
 
       /** The filename of non-entry chunks as relative path
        * inside the output.path directory.
@@ -120,7 +122,6 @@ module.exports = function (options) {
     },
 
     plugins: [
-
       /**
        * Plugin: DefinePlugin
        * Description: Define free variables.
@@ -140,6 +141,7 @@ module.exports = function (options) {
           'HMR': METADATA.HMR,
         }
       }),
+      new WriteFilePlugin(),
 
       new DllBundlesPlugin({
         bundles: {
@@ -223,7 +225,8 @@ module.exports = function (options) {
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
-      }
+      },
+      contentBase: "dist/"
     },
 
     /*
